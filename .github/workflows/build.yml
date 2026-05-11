@@ -1,0 +1,51 @@
+name: Build and Artifact
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Build frontend
+        run: bun run build
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.26'
+          cache-dependency-path: backend/go.sum
+
+      - name: Build Backend (linux-amd64)
+        run: |
+          mkdir -p backend/ui/dist
+          cp -r dist/* backend/ui/dist/
+          cd backend
+          GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o ../garage-webui-linux-amd64 -tags prod main.go
+
+      - name: Build Backend (linux-arm64)
+        run: |
+          cd backend
+          GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build -o ../garage-webui-linux-arm64 -tags prod main.go
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: garage-webui-binaries
+          path: |
+            garage-webui-linux-amd64
+            garage-webui-linux-arm64
