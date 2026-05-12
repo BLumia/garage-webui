@@ -35,12 +35,12 @@ jobs:
           mkdir -p backend/ui/dist
           cp -r dist/* backend/ui/dist/
           cd backend
-          GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o ../garage-webui-linux-amd64 -tags prod main.go
+          GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o ../garage-webui-linux-amd64 -tags prod .
 
       - name: Build Backend (linux-arm64)
         run: |
           cd backend
-          GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build -o ../garage-webui-linux-arm64 -tags prod main.go
+          GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build -o ../garage-webui-linux-arm64 -tags prod .
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v7

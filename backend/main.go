@@ -17,6 +17,8 @@ import (
 
 func main() {
 	godotenv.Load()
+	cli := parseFlags()
+	cli.applyToEnv()
 	utils.InitCacheManager()
 
 	if err := utils.Garage.LoadConfig(); err != nil {
